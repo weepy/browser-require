@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+var fs = require("fs")
+  , path = require("path")
+
+// alias the local require
+var req = global.require = require(__dirname + '/../require').require
+
+var modules = []
+// override the fetch mechanism
+req.load = function( path ) {
+  var text = fs.readFileSync(process.cwd() + '/' + path + '.js').toString()
+
+  modules.push( 
+    "require.register('" + path + "', function(module, exports, require) {\n\n" + text + "\n\n}); //@ sourceURL=" + path + '.js'
+  )
+
+  req.modules[path] = function() {}
+
+  var files = extract_dependencies( text )
+
+  files.forEach(function(file) {
+    req.relative(path)(file)
+  })
+
+
+  return req.modules[path]
+}
+
+
+
+// shim window
+global.window = global
+
+// do the actual require
+req( process.argv[2] )
+
+// build
+var output = modules.join('\n')
+
+// print out the final result to stdout
+console.log( output )
+
+
+function extract_dependencies(text) {
+
+  var all = /require\s*\('\s*([^'])*'\s*\)|require\s*\("\s*([^"])*"\s*\)/g
+    , start = /require\s*\(\s*["']/
+    , end = /["']\s*\)$/
+    , comments = /\/\*.+?\*\/|\/\/.*(?=[\n\r])/g   // or /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm
+
+  text = text.replace(comments, '')
+  var files = text.match(all) || []
+
+  for(var i=0; i< files.length; i++) {
+    files[i] = files[i].replace(start, "").replace(end, "")
+  }
+  return files
+}
