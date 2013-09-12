@@ -7,12 +7,13 @@ CommonJS for the browser in less than 80 lines. Works (pretty much) just like No
 Include in your page
 --------------------
 
+```
   <script src='require.js'></script>
   <script>
     var app = require("./app")
     var libs = require("./path/to/file")
   </script>
-
+```
 
 Prebuild
 --------
