@@ -1,52 +1,29 @@
-browser-require
-===============
+# require
 
-CommonJS for the browser in less than 80 lines. Works (pretty much) just like Node's require.
+Dropin `require` polyfill for the browser
 
+Really useful in development for when you don't want to crank up browserify.
 
-Include in your page
---------------------
+Super simple.
+
+Fully swappable with browserify and friends in production.
+
+# installation
+
+1) Include the script and serve it (it won't work direct from the filesystem due to browser security)
+
 
 ```
-  <script src='require.js'></script>
-  <script>
-    var app = require("./app")
-    var libs = require("./path/to/file")
-  </script>
+<script src='require.js'></script>
 ```
 
-Prebuild
---------
 
-`require` uses sync XHR to fetch unresolved dependencies. Fine for development, but you probably want to package them up for production.
+2) Code like a boss
 
-You can do this like so:
+# in production
 
-  bin/build path/to/src.js >> path/to/package.js
+It uses Sync XHR which is great for development, but not so much in production.
 
+Forunately, you can swap out this library with browserify or similar in production.
 
-Notes
------
-
-* Currently doesn't try to load from /index.js (unlike node)
-
-* `build` uses static analysis, meaning that dynamic filenames won't work.
-
-* uses XHR, so you need to serve local files or turn off web security
-
-
-Test
-----
-
-* dev mode
-
-  1. serve -p 3000
-  2. goto http://localhost:3000/test/test.html
-  3. check the console
-
-* test build
-
-  1. bin/build test/b >> test/_build.js
-  2. serve -p 3000
-  3. goto http://localhost:3000/test/test.html
-  4. check the console
+3) You can optionally include the PARSEJS library which will help pointpoint any syntax errors in your code whilst
